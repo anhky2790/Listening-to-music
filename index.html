@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bài thi Listening - Listening to music</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .speaker-block { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+    h3 { margin-top: 0; }
+    select { width: 100%; padding: 8px; font-size: 1em; margin-top: 5px; }
+    button { padding: 10px 15px; font-size: 16px; margin-top: 20px; }
+    .result { margin-top: 30px; padding: 15px; border: 2px dashed green; border-radius: 8px; background-color: #f9f9f9; }
+    .correct { color: green; }
+    .incorrect { color: red; }
+    .question-label { margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <h1>Bài thi Listening: Listening to music </h1>
+  <p><strong>Hướng dẫn:</strong> Nghe từng đoạn âm thanh và chọn câu mô tả chính xác nội dung người nói. Mỗi đoạn chỉ nghe tối đa 2 lần.</p>
+
+  <script>
+    const answerChoices = [
+      "To relax",
+      "To wake up",
+      "While singing",
+      "	While studying",
+      "While cooking"
+    ];
+    const correctAnswers = ["A", "B", "C", "D"];
+    const correctTexts = [answerChoices[0], answerChoices[1], answerChoices[2], answerChoices[3]];
+    const transcripts = [
+      "Speaker 1: I see a lot of people listen to music right when they wake up to help them feel alert. But if I listen to music as soon as I wake up, it gives me a headache all day and makes it hard for me to focus on anything. So, I just listen to music to relax when I’m feeling comfortable, not for any other reason.",
+      "Speaker 2: I usually listen to a pop or rock song as soon as I get out of bed in the morning because it helps me wake up instantly. If I don't listen to music at that moment, I don't know when I'll be able to get up and go to work.",
+      "Speaker 3: My brothers and friends often say that I have a beautiful voice, so I often sing when I meet them. I usually play music on the TV and hold the remote control, pretending it's a microphone so I can sing.",
+      "Speaker 4: I have a habit of listening to music while studying; it helps me stay motivated and alert while doing my assignments. If I don't play music, I could fall asleep at any moment, and I'll study in a discouraged mood."
+    ];
+  </script>
+
+  <!-- Speaker Blocks -->
+  <div class="speaker-block">
+    <h3>Người nói 1</h3>
+    <audio id="audio1" controls onplay="limitPlays(1)">
+      <source src="mp3_converted/speaker1.mp3" type="audio/mpeg">
+      Trình duyệt không hỗ trợ phát âm thanh.
+    </audio>
+    <div class="question-label">Chọn một đáp án:</div>
+    <select id="answer1">
+      <option value="">-- Chọn một đáp án --</option>
+    </select>
+  </div>
+
+  <div class="speaker-block">
+    <h3>Người nói 2</h3>
+    <audio id="audio2" controls onplay="limitPlays(2)">
+      <source src="mp3_converted/speaker2.mp3" type="audio/mpeg">
+      Trình duyệt không hỗ trợ phát âm thanh.
+    </audio>
+    <div class="question-label">Chọn một đáp án:</div>
+    <select id="answer2">
+      <option value="">-- Chọn một đáp án --</option>
+    </select>
+  </div>
+
+  <div class="speaker-block">
+    <h3>Người nói 3</h3>
+    <audio id="audio3" controls onplay="limitPlays(3)">
+      <source src="mp3_converted/speaker3.mp3" type="audio/mpeg">
+      Trình duyệt không hỗ trợ phát âm thanh.
+    </audio>
+    <div class="question-label">Chọn một đáp án:</div>
+    <select id="answer3">
+      <option value="">-- Chọn một đáp án --</option>
+    </select>
+  </div>
+
+  <div class="speaker-block">
+    <h3>Người nói 4</h3>
+    <audio id="audio4" controls onplay="limitPlays(4)">
+      <source src="mp3_converted/speaker4.mp3" type="audio/mpeg">
+      Trình duyệt không hỗ trợ phát âm thanh.
+    </audio>
+    <div class="question-label">Chọn một đáp án:</div>
+    <select id="answer4">
+      <option value="">-- Chọn một đáp án --</option>
+    </select>
+  </div>
+
+  <button onclick="submitQuiz()">Nộp bài</button>
+
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script>
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    const selects = document.querySelectorAll("select");
+    selects.forEach(select => {
+      const shuffled = [...answerChoices];
+      shuffleArray(shuffled);
+      shuffled.forEach(choice => {
+        const option = document.createElement("option");
+        option.value = choice;
+        option.textContent = choice;
+        select.add(option);
+      });
+    });
+
+    const playCounts = [0, 0, 0, 0];
+    function limitPlays(index) {
+      const audio = document.getElementById(`audio${index}`);
+      if (playCounts[index - 1] >= 2) {
+        audio.pause();
+        audio.currentTime = 0;
+        alert("Bạn chỉ được nghe tối đa 2 lần.");
+      } else {
+        playCounts[index - 1]++;
+      }
+    }
+
+    function submitQuiz() {
+      let correct = 0;
+      let output = "<h2>Kết quả</h2>";
+      selects.forEach((select, i) => {
+        const userAnswer = select.value;
+        const correctText = correctTexts[i];
+        const status = userAnswer === correctText ? "✅ <span class='correct'>Đúng</span>" : "❌ <span class='incorrect'>Sai</span>";
+        if (userAnswer === correctText) correct++;
+        output += `<p><strong>Người nói ${i+1}:</strong> ${status}<br>
+        Câu bạn chọn: ${userAnswer}<br>
+        Đáp án đúng: ${correctText}<br>
+        <em>Transcript: ${transcripts[i]}</em></p>`;
+        select.disabled = true;
+      });
+      output += `<hr><strong>Bạn trả lời đúng ${correct}/4 câu.</strong>`;
+      document.getElementById("result").innerHTML = output;
+      document.getElementById("result").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
